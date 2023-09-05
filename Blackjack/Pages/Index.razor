@@ -1,0 +1,35 @@
+﻿@page "/"
+
+<PageTitle>Blackjack</PageTitle>
+
+<h1>Blackjack</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+@code{
+    enum PlayerTypes
+    {
+        Dealer,
+        Player
+    }
+    enum Results
+    {
+        Unknown,
+        Blackjack,
+        PlayerLost,
+        DealerLost
+    }
+    string[] unicodeCards = { "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪", "🂫", "🂭", "🂮" };
+    const int numberOfCards = 52;
+    bool stay = false;
+
+    Card[] deck = new Card[numberOfCards];
+    Card[] playerCards = new Card[0];
+    Card[] dealerCards = new Card[0];
+    int playerScore = 0; int dealerScore = 0;
+
+    string winner = string.Empty;
+
+    Results result = Results.Unknown;
+}
