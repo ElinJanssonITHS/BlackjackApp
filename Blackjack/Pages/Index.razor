@@ -3,11 +3,39 @@
 <PageTitle>Blackjack</PageTitle>
 
 <h1>Blackjack</h1>
+@* Cards *@
 
-Welcome to your new app.
+@foreach (var card in deck)
+{
+    <span class="display-3">@card.Symbol</span>
+}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
-@code{
+@* Dealer *@
+<div class="text-danger display-3">Dealer</div>
+@foreach (var card in dealerCards)
+{
+    <span class="text-danger display-3">@card.Symbol</span>
+}
+<span class="text-danger display-3">&nbsp;@dealerScore</span>
+
+@* Player *@
+<div class="text-success display-3">Player</div>
+@foreach (var card in playerCards)
+{
+    <span class="text-success display-3">@card.Symbol</span>
+}
+<span class="text-success display-3">&nbsp;@playerScore</span>
+
+<div mt-4>
+    @if (!stay)
+    {
+        <button type-button class="btn btn-success" >Draw Card</button>
+    }
+
+</div>
+
+
+@code {
     enum PlayerTypes
     {
         Dealer,
@@ -32,4 +60,64 @@ Welcome to your new app.
     string winner = string.Empty;
 
     Results result = Results.Unknown;
+
+    protected override void OnInitialized()
+    {
+        NewGame();
+
+        dealerCards = deck[0..2];
+        playerCards = deck[2..4];
+        deck = deck[4..];
+    }
+    public void NewGame()
+    {
+        stay = false;
+        playerCards = new Card[0];
+        dealerCards = new Card[0];
+        playerScore = 0; dealerScore = 0;
+        winner = string.Empty; result = Results.Unknown;
+
+        deck = CreateGameDeck();
+        DealCards(ref dealerCards, PlayerTypes.Dealer, 2);
+        DealCards(ref playerCards, PlayerTypes.Player, 2);
+    }
+    Card[] CreateGameDeck()
+    {
+        Card[] cards = CreateDeck();
+        return ShuffleDeck(cards);
+    }
+    Card[] CreateDeck()
+    {
+        var cards = new Card[numberOfCards];
+        int index = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < unicodeCards.Length; j++)
+            {
+                int value = j > 9 ? 10 : j + 1;
+                cards[index] = new Card(unicodeCards[j], value);
+                index++;
+            }
+        }
+        return cards;
+    }
+    Card[] ShuffleDeck(Card[] cards)
+    {
+        Random random = new();
+        for (int i = 0; i < cards.Length; i++)
+        {
+            int swap = random.Next(cards.Length);
+            Card temp = cards[i];
+            cards[i] = cards[swap];
+            cards[swap] = temp;
+        }
+        return cards;
+    }
+    void DealCards(ref Card[] cards, PlayerTypes playerType, int takeCards = 1)
+    {
+        cards = cards.Concat(deck[0..takeCards]).ToArray();
+        cards = deck[takeCards..];
+    }
+
+
 }
