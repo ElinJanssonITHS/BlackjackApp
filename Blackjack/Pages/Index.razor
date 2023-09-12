@@ -29,7 +29,13 @@
 <div mt-4>
     @if (!stay)
     {
-        <button type-button class="btn btn-success" >Draw Card</button>
+        <button class="btn btn-success text-white text-center" @onclick="(() => DealCards(ref playerCards, PlayerTypes.Player))">Draw Card</button>
+        <button class="btn btn-danger text-white text-center" @onclick="Stay">Stay</button>
+        
+    }
+    else
+    {
+        <button class="btn btn-primary text-white text-center" @onclick="NewGame">New Game</button>
     }
 
 </div>
@@ -50,7 +56,7 @@
     }
     string[] unicodeCards = { "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪", "🂫", "🂭", "🂮" };
     const int numberOfCards = 52;
-    bool stay = false;
+    bool stay;
 
     Card[] deck = new Card[numberOfCards];
     Card[] playerCards = new Card[0];
@@ -61,30 +67,21 @@
 
     Results result = Results.Unknown;
 
-    protected override void OnInitialized()
-    {
-        NewGame();
+    protected override void OnInitialized() => NewGame();
 
-        dealerCards = deck[0..2];
-        playerCards = deck[2..4];
-        deck = deck[4..];
-    }
-    public void NewGame()
+    void NewGame()
     {
-        stay = false;
         playerCards = new Card[0];
         dealerCards = new Card[0];
+        stay = false;
         playerScore = 0; dealerScore = 0;
         winner = string.Empty; result = Results.Unknown;
 
-        deck = CreateGameDeck();
+        Card[] cards = CreateDeck();
+        deck = ShuffleDeck(cards);
+
         DealCards(ref dealerCards, PlayerTypes.Dealer, 2);
         DealCards(ref playerCards, PlayerTypes.Player, 2);
-    }
-    Card[] CreateGameDeck()
-    {
-        Card[] cards = CreateDeck();
-        return ShuffleDeck(cards);
     }
     Card[] CreateDeck()
     {
@@ -117,6 +114,67 @@
     {
         cards = cards.Concat(deck[0..takeCards]).ToArray();
         cards = deck[takeCards..];
+
+        if (playerType.Equals(PlayerTypes.Player))
+        {
+            CalculateScore(cards, out playerScore);
+
+            if (cards.Count().Equals(2) && playerScore.Equals(21))
+            {
+                result = Results.Blackjack;
+                Stay();
+            }
+            if (playerScore > 21)
+            {
+                result = Results.PlayerLost;
+                Stay();
+            }
+        }
+        else
+        {
+            if (!stay)
+            {
+                cards[0].IsHidden = true;
+            }
+
+            CalculateScore(cards, out dealerScore);
+
+            if (dealerScore > 21)
+            {
+                result = Results.DealerLost;
+            }
+        }
+
+    }
+    void Stay()
+    {
+        stay = true;
+        dealerCards[0].IsHidden = false;
+
+        if (!result.Equals(Results.Blackjack) && !result.Equals(Results.PlayerLost))
+        {
+            DrawDealerCards();
+        }
+    }
+    void DrawDealerCards()
+    {
+        while (dealerScore < 17)
+        {
+            DealCards(ref dealerCards, PlayerTypes.Dealer);
+        }
+    }
+    void CalculateScore(Card[] cards, out int score)
+    {
+        score = cards.Sum(c => c.Value);
+        var aces = cards.Where(c => c.Value.Equals(1) && !c.IsHidden);
+
+        foreach (var ace in aces)
+        {
+            if (score <= 11)
+            {
+                score += 10;
+            }
+        }
     }
 
 
