@@ -3,12 +3,6 @@
 <PageTitle>Blackjack</PageTitle>
 
 <h1>Blackjack</h1>
-@* Cards *@
-
-@foreach (var card in deck)
-{
-    <span class="display-3">@card.Symbol</span>
-}
 
 @* Dealer *@
 <div class="text-danger display-3">Dealer</div>
@@ -31,13 +25,16 @@
     {
         <button class="btn btn-success text-white text-center" @onclick="(() => DealCards(ref playerCards, PlayerTypes.Player))">Draw Card</button>
         <button class="btn btn-danger text-white text-center" @onclick="Stay">Stay</button>
-        
+
     }
     else
     {
         <button class="btn btn-primary text-white text-center" @onclick="NewGame">New Game</button>
     }
-
+</div>
+<br />
+<div class="text-primary display-1">
+    @winner
 </div>
 
 
@@ -67,7 +64,6 @@
 
     Results result = Results.Unknown;
 
-    protected override void OnInitialized() => NewGame();
 
     void NewGame()
     {
@@ -83,37 +79,11 @@
         DealCards(ref dealerCards, PlayerTypes.Dealer, 2);
         DealCards(ref playerCards, PlayerTypes.Player, 2);
     }
-    Card[] CreateDeck()
-    {
-        var cards = new Card[numberOfCards];
-        int index = 0;
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < unicodeCards.Length; j++)
-            {
-                int value = j > 9 ? 10 : j + 1;
-                cards[index] = new Card(unicodeCards[j], value);
-                index++;
-            }
-        }
-        return cards;
-    }
-    Card[] ShuffleDeck(Card[] cards)
-    {
-        Random random = new();
-        for (int i = 0; i < cards.Length; i++)
-        {
-            int swap = random.Next(cards.Length);
-            Card temp = cards[i];
-            cards[i] = cards[swap];
-            cards[swap] = temp;
-        }
-        return cards;
-    }
+
     void DealCards(ref Card[] cards, PlayerTypes playerType, int takeCards = 1)
     {
         cards = cards.Concat(deck[0..takeCards]).ToArray();
-        cards = deck[takeCards..];
+        deck = deck[takeCards..];
 
         if (playerType.Equals(PlayerTypes.Player))
         {
@@ -146,23 +116,7 @@
         }
 
     }
-    void Stay()
-    {
-        stay = true;
-        dealerCards[0].IsHidden = false;
 
-        if (!result.Equals(Results.Blackjack) && !result.Equals(Results.PlayerLost))
-        {
-            DrawDealerCards();
-        }
-    }
-    void DrawDealerCards()
-    {
-        while (dealerScore < 17)
-        {
-            DealCards(ref dealerCards, PlayerTypes.Dealer);
-        }
-    }
     void CalculateScore(Card[] cards, out int score)
     {
         score = cards.Sum(c => c.Value);
@@ -176,6 +130,90 @@
             }
         }
     }
+
+    void Stay()
+    {
+        stay = true;
+        dealerCards[0].IsHidden = false;
+
+        if (!result.Equals(Results.Blackjack) && !result.Equals(Results.PlayerLost))
+        {
+            DrawDealerCards();
+        }
+
+        DetermineWinner(result);
+    }
+
+    void DrawDealerCards()
+    {
+        while (dealerScore < 17)
+        {
+            DealCards(ref dealerCards, PlayerTypes.Dealer);
+        }
+    }
+
+    void DetermineWinner(Results result)
+    {
+        if (result.Equals(Results.Blackjack) || result.Equals(Results.PlayerLost))
+        {
+            dealerCards[0].IsHidden = true;
+            dealerScore = dealerCards[1].Value;
+        }
+
+        if (result.Equals(Results.Blackjack))
+        {
+            winner = "Player wins with Blackjack";
+        }
+        else if (result.Equals(Results.PlayerLost) )
+        {
+            winner = "Dealer wins";
+        }
+        else if (result.Equals(Results.DealerLost))
+        {
+            winner = "Player wins";
+        }
+        else if (dealerScore > playerScore)
+        {
+            winner = "Dealer wins";
+        }
+        else if (playerScore > dealerScore)
+        {
+            winner = "Player wins";
+        }
+        else 
+            winner = "Draw";
+    }
+
+
+    Card[] CreateDeck()
+    {
+        var cards = new Card[numberOfCards];
+        int index = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < unicodeCards.Length; j++)
+            {
+                int value = j > 9 ? 10 : j + 1;
+                cards[index] = new Card(unicodeCards[j], value);
+                index++;
+            }
+        }
+        return cards;
+    }
+    Card[] ShuffleDeck(Card[] cards)
+    {
+        Random random = new();
+        for (int i = 0; i < cards.Length; i++)
+        {
+            int swap = random.Next(cards.Length);
+            Card temp = cards[i];
+            cards[i] = cards[swap];
+            cards[swap] = temp;
+        }
+        return cards;
+    }
+
+    protected override void OnInitialized() => NewGame();
 
 
 }
