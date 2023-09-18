@@ -1,4 +1,4 @@
-﻿namespace Blackjack.Classes;
+﻿namespace Blackjack.Records;
 
 public record class Card
 {

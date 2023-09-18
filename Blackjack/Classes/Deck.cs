@@ -1,43 +1,47 @@
-﻿namespace Blackjack.Classes;
+﻿using Blackjack.Records;
+namespace Blackjack.Classes;
 
 public class Deck
 {
-    private Card[] _cards;
-    private string[] unicodeCards = { "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪", "🂫", "🂭", "🂮" };
     private const int numberOfCards = 52;
+    private Card[] deck = new Card[numberOfCards]; 
+    //private string[] unicodeCards = { "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪", "🂫", "🂭", "🂮" };
+    private string[,] suits =  {{ "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪" , "🂫", "🂭", "🂮" },
+                                { "🂱", "🂲", "🂳", "🂴", "🂵", "🂶", "🂷", "🂸", "🂹", "🂺", "🂻", "🂽", "🂾" },
+                                { "🃁", "🃂", "🃃", "🃄", "🃅", "🃆", "🃇", "🃈", "🃉", "🃊", "🃋", "🃍", "🃎" },
+                                { "🃑", "🃒", "🃓", "🃔", "🃕", "🃖", "🃗", "🃘", "🃙", "🃚", "🃛", "🃝", "🃞" }};
 
-    public Deck() { }
+
 
     public void NewDeck()
     {
-        CreateDeck();
-        ShuffleDeck(_cards);
+        deck = CreateDeck();
+        deck = ShuffleDeck(deck);
     }
 
-    public void DealCard (Player player, int takeCards = 1)
+    public Card[] DealCard (int takeCards = 1)
     {
-        Card[] dealingCards = new Card[takeCards];
-        dealingCards = dealingCards.Concat(_cards[0..takeCards]).ToArray();
+        var cards = deck[0..takeCards];
+        deck = deck[takeCards..];
+        return cards;
 
-        player.AddCards(dealingCards, dealingCards.Length);
-
-        _cards = _cards[takeCards..];
 
     }
 
-    private void CreateDeck()
+    private Card[] CreateDeck()
     {
-        _cards = new Card[numberOfCards];
+        var cards = new Card[numberOfCards];
         int index = 0;
         for (int i = 0; i < 4; i++)
         {
-            for (int j = 0; j < unicodeCards.Length; j++)
+            for (int j = 0; j < 13; j++)
             {
                 int value = j > 9 ? 10 : j + 1;
-                _cards[index] = new Card(unicodeCards[j], value);
+                cards[index] = new Card(suits[i, j], value);
                 index++;
             }
         }
+        return cards;
     }
 
     Card[] ShuffleDeck(Card[] cards)

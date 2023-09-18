@@ -1,6 +1,6 @@
 ﻿namespace Blackjack.Enums
 {
-    enum Results
+    public enum Results
     {
         Unknown,
         Blackjack,
