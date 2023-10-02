@@ -10,7 +10,7 @@
 <div class="text-danger display-3">Dealer</div>
 @foreach (var card in game.GetDealerCards())
 {
-    <span class="text-black display-1">@card.Symbol</span>
+    <span class="text-black display-1">@card.Symbol</span>          //Color all red cards
 }
 <span class="text-danger display-3">&nbsp;@game.GetDealerScore()</span>
 
@@ -18,7 +18,7 @@
 <div class="text-success display-3">Player</div>
 @foreach (var card in game.GetPlayerCards())
 {
-    <span class="text-black display-1">@card.Symbol</span>
+    <span class="text-black display-1">@card.Symbol</span>          //Color all red cards
 }
 <span class="text-success display-3">&nbsp;@game.GetPlayerScore()</span>
 

@@ -8,7 +8,8 @@ public class Player
 {
     GameBlackJack Game {set; get;}
     public bool Stays { get; set; }
-    public Card[] Cards { get; private set; } = new Card[0];
+    public List<Card> Cards { get; private set; } = new();
+
     public int Score { get; set; } = default;
     public PlayerTypes PlayerType { get; init; } = default;
     public Results Result { get; private set; } = Results.Unknown;
@@ -17,9 +18,9 @@ public class Player
     (PlayerType, Game) = (playerType, game);
 
 
-    public void AddCard(Card[] cards)
+    public void AddCard(List<Card> cards)
     {
-        Cards = Cards.Concat(cards).ToArray();
+        Cards.AddRange(cards);
         if (PlayerType.Equals(PlayerTypes.Player))
         {
             CalculateScore();
@@ -42,7 +43,7 @@ public class Player
     }
 
 
-    void CalculateScore()
+    public void CalculateScore()
     {
         Score = Cards.Sum(c => c.Value);
         var aces = Cards.Where(c => c.Value.Equals(1) && !c.IsHidden);

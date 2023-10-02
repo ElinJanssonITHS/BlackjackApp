@@ -17,10 +17,10 @@ public class GameBlackJack
         player = new(PlayerTypes.Player, this);
         dealer = new(PlayerTypes.Dealer, this);
     }
-    
-    public Card[] GetPlayerCards () => player.Cards;
+
+    public List<Card> GetPlayerCards() => player.Cards;
     public int GetPlayerScore () => player.Score;
-    public Card[] GetDealerCards () => dealer.Cards;
+    public List<Card> GetDealerCards() => dealer.Cards;
     public int GetDealerScore () => dealer.Score;
 
 
@@ -29,7 +29,7 @@ public class GameBlackJack
     
     public void DealDealerCard(int takeCards = 1, bool firstCards = false)
     {
-        Card[] cards = deck.DealCard(takeCards);
+        List<Card> cards = deck.DealCard(takeCards);
         if (firstCards)
         {
             cards[0].IsHidden = true;
@@ -41,12 +41,12 @@ public class GameBlackJack
     {
         player.Stays = true;
         dealer.Stays = true;
-        dealer.Cards[0].IsHidden = false;
 
         if (!player.Result.Equals(Results.Blackjack) &&
             !player.Result.Equals(Results.PlayerLost))
-
         {
+            dealer.Cards.First().IsHidden = false;
+            dealer.CalculateScore();
             while (dealer.Score < 17)
             {
                 DealDealerCard();
@@ -60,7 +60,7 @@ public class GameBlackJack
     {
         if (player.Result.Equals(Results.Blackjack) || player.Result.Equals(Results.PlayerLost))
         {
-            dealer.Cards[0].IsHidden = true;
+            dealer.Cards.First().IsHidden = true;
             dealer.Score = dealer.Cards[1].Value;
         }
 
@@ -98,4 +98,5 @@ public class GameBlackJack
         DealDealerCard(2, true);
         DealPlayerCard(2);
     }
+
 }

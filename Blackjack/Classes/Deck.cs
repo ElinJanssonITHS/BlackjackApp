@@ -3,57 +3,65 @@ namespace Blackjack.Classes;
 
 public class Deck
 {
-    private const int numberOfCards = 52;
-    private Card[] deck = new Card[numberOfCards]; 
-    //private string[] unicodeCards = { "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪", "🂫", "🂭", "🂮" };
+
+    private Stack<Card> deck = new ();
+
     private string[,] suits =  {{ "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪" , "🂫", "🂭", "🂮" },
                                 { "🂱", "🂲", "🂳", "🂴", "🂵", "🂶", "🂷", "🂸", "🂹", "🂺", "🂻", "🂽", "🂾" },
                                 { "🃁", "🃂", "🃃", "🃄", "🃅", "🃆", "🃇", "🃈", "🃉", "🃊", "🃋", "🃍", "🃎" },
                                 { "🃑", "🃒", "🃓", "🃔", "🃕", "🃖", "🃗", "🃘", "🃙", "🃚", "🃛", "🃝", "🃞" }};
 
-
+    //Red Cards
+    // { "🂱", "🂲", "🂳", "🂴", "🂵", "🂶", "🂷", "🂸", "🂹", "🂺", "🂻", "🂽", "🂾" }
+    // { "🃁", "🃂", "🃃", "🃄", "🃅", "🃆", "🃇", "🃈", "🃉", "🃊", "🃋", "🃍", "🃎" }
 
     public void NewDeck()
     {
-        deck = CreateDeck();
-        deck = ShuffleDeck(deck);
+        var cards = CreateDeck().ToList();
+        ShuffleDeck(cards);
     }
 
-    public Card[] DealCard (int takeCards = 1)
+    public List<Card> DealCard (int takeCards = 1)
     {
-        var cards = deck[0..takeCards];
-        deck = deck[takeCards..];
+        List<Card> cards = new();
+        for (int i = 0; i <  takeCards; i++)
+        {
+            try
+            {
+                cards.Add(deck.Pop());
+            }
+            catch { }
+        }
         return cards;
-
-
     }
 
-    private Card[] CreateDeck()
+    private IEnumerable<Card> CreateDeck()
     {
-        var cards = new Card[numberOfCards];
-        int index = 0;
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 13; j++)
             {
                 int value = j > 9 ? 10 : j + 1;
-                cards[index] = new Card(suits[i, j], value);
-                index++;
+                yield return new Card(suits[i, j], value);               
             }
         }
-        return cards;
+        
     }
 
-    Card[] ShuffleDeck(Card[] cards)
+    void ShuffleDeck(List<Card> cards)
     {
         Random random = new();
-        for (int i = 0; i < cards.Length; i++)
+        int n = cards.Count;
+        while (n > 1)
         {
-            int swap = random.Next(cards.Length);
-            Card temp = cards[i];
-            cards[i] = cards[swap];
-            cards[swap] = temp;
+            n--;
+            int k = random.Next(n + 1);
+            Card value = cards[k];
+            cards[k] = cards[n];
+            cards[n] = value;
+            deck.Push(value);
         }
-        return cards;
+        ;
     }
+
 }
