@@ -1,32 +1,23 @@
 ﻿using Blackjack.Enums;
 using Blackjack.Records;
 namespace Blackjack.Classes;
-
-
 public class GameBlackJack
 {
     private Player player;
-    private Player dealer;
+    private Dealer dealer;
     private Deck deck = new();
-
     public bool Stays { get => player.Stays; }
     public string Winner { get; private set; } = string.Empty;
-
     public GameBlackJack()
     {
-        player = new(PlayerTypes.Player, this);
-        dealer = new(PlayerTypes.Dealer, this);
+        player = new(this);
+        dealer = new();
     }
-
     public List<Card> GetPlayerCards() => player.Cards;
     public int GetPlayerScore () => player.Score;
     public List<Card> GetDealerCards() => dealer.Cards;
     public int GetDealerScore () => dealer.Score;
-
-
-
     public void DealPlayerCard(int takeCards = 1) => player.AddCard(deck.DealCard(takeCards));
-    
     public void DealDealerCard(int takeCards = 1, bool firstCards = false)
     {
         List<Card> cards = deck.DealCard(takeCards);
@@ -36,7 +27,6 @@ public class GameBlackJack
         }
         dealer.AddCard(cards);
     }
-
     public void Stay()
     {
         player.Stays = true;
@@ -55,7 +45,6 @@ public class GameBlackJack
 
         DetermineWinner();
     }
-
     void DetermineWinner()
     {
         if (player.Result.Equals(Results.Blackjack) || player.Result.Equals(Results.PlayerLost))
@@ -92,11 +81,10 @@ public class GameBlackJack
         Winner = string.Empty;
         deck.NewDeck();
 
-        player = new(PlayerTypes.Player, this);
-        dealer = new(PlayerTypes.Dealer, this);
+        player = new(this);
+        dealer = new();
 
         DealDealerCard(2, true);
         DealPlayerCard(2);
     }
-
 }

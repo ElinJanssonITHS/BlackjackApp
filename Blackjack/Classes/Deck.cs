@@ -3,24 +3,19 @@ namespace Blackjack.Classes;
 
 public class Deck
 {
-
     private Stack<Card> deck = new ();
-
     private string[,] suits =  {{ "🂡", "🂢", "🂣", "🂤", "🂥", "🂦", "🂧", "🂨", "🂩", "🂪" , "🂫", "🂭", "🂮" },
                                 { "🂱", "🂲", "🂳", "🂴", "🂵", "🂶", "🂷", "🂸", "🂹", "🂺", "🂻", "🂽", "🂾" },
                                 { "🃁", "🃂", "🃃", "🃄", "🃅", "🃆", "🃇", "🃈", "🃉", "🃊", "🃋", "🃍", "🃎" },
                                 { "🃑", "🃒", "🃓", "🃔", "🃕", "🃖", "🃗", "🃘", "🃙", "🃚", "🃛", "🃝", "🃞" }};
-
     //Red Cards
     // { "🂱", "🂲", "🂳", "🂴", "🂵", "🂶", "🂷", "🂸", "🂹", "🂺", "🂻", "🂽", "🂾" }
     // { "🃁", "🃂", "🃃", "🃄", "🃅", "🃆", "🃇", "🃈", "🃉", "🃊", "🃋", "🃍", "🃎" }
-
     public void NewDeck()
     {
         var cards = CreateDeck().ToList();
         ShuffleDeck(cards);
     }
-
     public List<Card> DealCard (int takeCards = 1)
     {
         List<Card> cards = new();
@@ -34,7 +29,6 @@ public class Deck
         }
         return cards;
     }
-
     private IEnumerable<Card> CreateDeck()
     {
         for (int i = 0; i < 4; i++)
@@ -45,9 +39,7 @@ public class Deck
                 yield return new Card(suits[i, j], value);               
             }
         }
-        
     }
-
     void ShuffleDeck(List<Card> cards)
     {
         Random random = new();
@@ -60,8 +52,6 @@ public class Deck
             cards[k] = cards[n];
             cards[n] = value;
             deck.Push(value);
-        }
-        ;
+        }        
     }
-
 }

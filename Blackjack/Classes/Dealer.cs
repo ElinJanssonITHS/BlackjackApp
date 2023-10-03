@@ -3,28 +3,17 @@ using Blackjack.Interfaces;
 using Blackjack.Records;
 
 namespace Blackjack.Classes;
-public class Player : IPlayer
+public class Dealer : IPlayer
 {
-    GameBlackJack Game { set; get; }
     public bool Stays { get; set; }
     public List<Card> Cards { get; private set; } = new();
     public int Score { get; set; } = default;
     public Results Result { get; private set; } = Results.Unknown;
-    public Player(GameBlackJack game) => Game = game;
     public void AddCard(List<Card> cards)
     {
         Cards.AddRange(cards);
         CalculateScore();
-        if (Score == 21 && cards.Count().Equals(2))
-        {
-            Result = Results.Blackjack;
-            Game.Stay();
-        }
-        if (Score > 21)
-        {
-            Result = Results.PlayerLost;
-            Game.Stay();
-        }
+        if (Score > 21) Result = Results.DealerLost;
     }
     public void CalculateScore()
     {
