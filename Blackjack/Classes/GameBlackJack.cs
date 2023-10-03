@@ -14,9 +14,9 @@ public class GameBlackJack
         dealer = new();
     }
     public List<Card> GetPlayerCards() => player.Cards;
-    public int GetPlayerScore () => player.Score;
+    public int GetPlayerScore() => player.Score;
     public List<Card> GetDealerCards() => dealer.Cards;
-    public int GetDealerScore () => dealer.Score;
+    public int GetDealerScore() => dealer.Score;
     public void DealPlayerCard(int takeCards = 1) => player.AddCard(deck.DealCard(takeCards));
     public void DealDealerCard(int takeCards = 1, bool firstCards = false)
     {
@@ -88,3 +88,4 @@ public class GameBlackJack
         DealPlayerCard(2);
     }
 }
+  
